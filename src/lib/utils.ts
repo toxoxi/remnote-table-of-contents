@@ -56,3 +56,28 @@ async function extractAttributes(rem: Rem, plugin: RNPlugin): Promise<[id: strin
 async function isHeaderRem(rem: Rem): Promise<boolean> {
   return await rem.hasPowerup(BuiltInPowerupCodes.Header);
 }
+
+export type FlatContent = {
+  id: RemId;
+  depth: number;
+  text: string;
+}
+// convert nested Content to flat list
+// - before: [{ [id_1]: { depth: 1, text: 'hoge', children: [ { [id_2]: ... }, { [id_3]: ... } ] }}, { [id_4]: ... }]
+// - after: [{ id: id_1, depth: 1, text: 'hoge' }, { id: id_2, depth: 2, text: 'fuga' }, { id: id_3, depth: 2, text: 'piyo' }, { id: id_4, depth: 1, text: 'foo' } }]
+export function convertContentsToFlatList(contents: Content[]): FlatContent[] {
+  const flatContents = contents.flatMap(content => {
+    const [id, depth, text, children] = extractContent(content);
+    return [{ id, depth, text }, ...convertContentsToFlatList(children)];
+  });
+  return flatContents;
+}
+
+function extractContent(content: Content): [id: RemId, depth: number, text: string, children: Content[]] {
+  const id = Object.keys(content)[0];
+  const depth = content[id].depth;
+  const text = content[id].text;
+  const children = content[id].children;
+
+  return [id, depth, text, children];
+}

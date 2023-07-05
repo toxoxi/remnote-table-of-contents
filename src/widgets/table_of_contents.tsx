@@ -5,24 +5,45 @@ import {
   useSessionStorageState,
   RemId,
 } from '@remnote/plugin-sdk';
-import { generateContents } from '../lib/utils';
+import { convertContentsToFlatList, generateContents } from '../lib/utils';
 
 export const TableOfContentsWidget = () => {
   const plugin = usePlugin();
   const [remId, _] = useSessionStorageState<RemId | undefined>('toc_currentRemId', undefined);
-  useRunAsync(async () => {
-    const rem = await plugin.rem.findOne(remId);
-    if (!rem) return;
+  const contents =
+    useRunAsync(async () => {
+      const rem = await plugin.rem.findOne(remId);
+      if (!rem) return;
 
-    const contents = await generateContents(rem, plugin);
-    console.log('contents', contents);
-  }, [remId]);
+      return await generateContents(rem, plugin);
+    }, [remId]) || [];
+
+  if (contents.length === 0) {
+    // TODO: spinner
+    return null;
+  }
+
+  const flatContents = convertContentsToFlatList(contents);
 
   return (
-    <div className="p-2 m-2 rounded-lg rn-clr-background-light-positive rn-clr-content-positive">
-      <h1 className="text-xl">Sample Plugin</h1>
-      <div></div>
-    </div>
+    <nav className="rounded py-1 px-4">
+      <h1 className="text-lg">Contents</h1>
+      <hr className="border-gray-300" />
+      <ul className="p-0 space-y-3 list-none">
+        {flatContents.map((content, i) => (
+          <li className={`ml-${(content.depth - 1) * 4}`}>
+            <a
+              key={`${content.id}_${i}`}
+              href="#"
+              onClick={() => console.log('onClick:', content.id, content.text)}
+              className="flex text-base"
+            >
+              <span>{content.text}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 
