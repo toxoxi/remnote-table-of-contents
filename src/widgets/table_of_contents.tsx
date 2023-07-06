@@ -1,7 +1,7 @@
 import {
   renderWidget,
   usePlugin,
-  useRunAsync,
+  useTracker,
   useSessionStorageState,
   RemId,
 } from '@remnote/plugin-sdk';
@@ -11,12 +11,15 @@ export const TableOfContentsWidget = () => {
   const plugin = usePlugin();
   const [remId, _] = useSessionStorageState<RemId | undefined>('toc_currentRemId', undefined);
   const contents =
-    useRunAsync(async () => {
-      const rem = await plugin.rem.findOne(remId);
-      if (!rem) return;
-
-      return await generateContents(rem, plugin);
-    }, [remId]) || [];
+    useTracker(
+      async (reactivePlugin) => {
+        const rem = await reactivePlugin.rem.findOne(remId);
+        if (!rem) return;
+        await rem.allRemInDocumentOrPortal(); // track the changes of all rems
+        return await generateContents(rem, plugin);
+      },
+      [remId]
+    ) || [];
 
   if (contents.length === 0) {
     // TODO: spinner
