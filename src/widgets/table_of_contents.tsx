@@ -25,6 +25,13 @@ export const TableOfContentsWidget = () => {
 
   const flatContents = convertContentsToFlatList(contents);
 
+  const jumpToRem = async (remId: RemId) => {
+    // remove focus if some rems are selected
+    await plugin.editor.selectText({ start: 0, end: 0 });
+    // jump to the rem
+    await plugin.editor.selectRem([remId]);
+  };
+
   return (
     <nav className="rounded py-1 px-4">
       <h1 className="text-lg">Contents</h1>
@@ -35,7 +42,7 @@ export const TableOfContentsWidget = () => {
             <a
               key={`${content.id}_${i}`}
               href="#"
-              onClick={() => console.log('onClick:', content.id, content.text)}
+              onClick={async () => await jumpToRem(content.id)}
               className="flex text-base"
             >
               <span>{content.text}</span>
