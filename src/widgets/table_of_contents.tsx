@@ -21,9 +21,14 @@ export const TableOfContentsWidget = () => {
       [remId]
     ) || [];
 
+  // TODO: add a spinner to distinguish between no contents and loading
   if (contents.length === 0) {
-    // TODO: spinner
-    return null;
+    return (
+      <nav className="rounded py-1 px-4">
+        <h1 className="text-lg">No headings in this page</h1>
+        <p>Use headings to create a table of contents and organize your knowledge!</p>
+      </nav>
+    );
   }
 
   const flatContents = convertContentsToFlatList(contents);
