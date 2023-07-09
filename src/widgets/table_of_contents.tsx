@@ -36,7 +36,7 @@ export const TableOfContentsWidget = () => {
   };
 
   return (
-    <nav className="rounded py-1 px-4">
+    <nav className="rounded py-1 px-4 h-full overflow-y-auto">
       <h1 className="text-lg">Contents</h1>
       <hr className="border-gray-300" />
       <ul className="p-0 space-y-3 list-none">
