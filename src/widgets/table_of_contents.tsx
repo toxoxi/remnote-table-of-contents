@@ -1,25 +1,18 @@
-import {
-  renderWidget,
-  usePlugin,
-  useTracker,
-  useSessionStorageState,
-  RemId,
-} from '@remnote/plugin-sdk';
+import { renderWidget, usePlugin, useTracker, RemId } from '@remnote/plugin-sdk';
 import { convertContentsToFlatList, generateContents } from '../lib/utils';
 
 export const TableOfContentsWidget = () => {
   const plugin = usePlugin();
-  const [remId, _] = useSessionStorageState<RemId | undefined>('toc_currentRemId', undefined);
+  // TODO: detect opening another document
   const contents =
-    useTracker(
-      async (reactivePlugin) => {
-        const rem = await reactivePlugin.rem.findOne(remId);
-        if (!rem) return;
-        await rem.allRemInDocumentOrPortal(); // track the changes of all rems
-        return await generateContents(rem, plugin);
-      },
-      [remId]
-    ) || [];
+    useTracker(async (reactivePlugin) => {
+      const paneId = await reactivePlugin.window.getFocusedPaneId();
+      const remId = await reactivePlugin.window.getOpenPaneRemId(paneId);
+      const rem = await reactivePlugin.rem.findOne(remId);
+      if (!rem) return;
+      await rem.allRemInDocumentOrPortal(); // track the changes of all rems
+      return await generateContents(rem, plugin);
+    }, []) || [];
 
   // TODO: add a spinner to distinguish between no contents and loading
   if (contents.length === 0) {
