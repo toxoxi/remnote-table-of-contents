@@ -81,3 +81,24 @@ function extractContent(content: Content): [id: RemId, depth: number, text: stri
 
   return [id, depth, text, children];
 }
+
+export const expandHighestCollapsedAncestor = async (remId: RemId, plugin: RNPlugin) => {
+  const pane = await plugin.window.getFocusedPaneId();
+  const documentRemId = await plugin.window.getOpenPaneRemId(pane);
+
+  let currentRem = await plugin.rem.findOne(remId);
+  if (!currentRem || !documentRemId || documentRemId === currentRem._id) return;
+
+  let highestCollapsedId: RemId | undefined;
+  while (currentRem?.parent && currentRem._id !== documentRemId) {
+    const isCollapsed = await currentRem.isCollapsed(documentRemId);
+    if (isCollapsed) {
+      highestCollapsedId = currentRem._id;
+    }
+    currentRem = await plugin.rem.findOne(currentRem.parent);
+  }
+
+  const expandTarget = await plugin.rem.findOne(highestCollapsedId);
+  await expandTarget?.expand(documentRemId, true);
+};
+

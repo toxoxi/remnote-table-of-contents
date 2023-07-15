@@ -1,5 +1,9 @@
-import { renderWidget, usePlugin, useTracker, RemId } from '@remnote/plugin-sdk';
-import { convertContentsToFlatList, generateContents } from '../lib/utils';
+import { renderWidget, usePlugin, useTracker, RemId, Rem } from '@remnote/plugin-sdk';
+import {
+  convertContentsToFlatList,
+  expandHighestCollapsedAncestor,
+  generateContents,
+} from '../lib/utils';
 
 export const TableOfContentsWidget = () => {
   const plugin = usePlugin();
@@ -27,6 +31,8 @@ export const TableOfContentsWidget = () => {
   const flatContents = convertContentsToFlatList(contents);
 
   const jumpToRem = async (remId: RemId) => {
+    // expand the highest collapsed ancestor rem in order to jump to the rem
+    await expandHighestCollapsedAncestor(remId, plugin);
     // remove focus if some rems are selected
     await plugin.editor.selectText({ start: 0, end: 0 });
     // jump to the rem
