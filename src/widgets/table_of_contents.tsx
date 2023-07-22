@@ -55,9 +55,9 @@ export const TableOfContentsWidget = () => {
               key={`${content.id}_${i}`}
               href="#"
               onClick={async () => await jumpToRem(content.id)}
-              className="flex text-base"
+              className="flex text-base no-underline text-gray-700 hover:text-gray-900 hover:underline"
             >
-              <span>{content.text}</span>
+              {content.text}
             </a>
           </li>
         ))}
