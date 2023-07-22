@@ -12,6 +12,8 @@ async function onActivate(plugin: ReactRNPlugin) {
   // Register a sidebar widget.
   await plugin.app.registerWidget('table_of_contents', WidgetLocation.RightSidebar, {
     dimensions: { height: 'auto', width: '100%' },
+    widgetTabIcon: `${plugin.rootURL}toc_icon.png`,
+    widgetTabTitle: 'Table of Contents',
   });
 
   plugin.event.addListener(AppEvents.GlobalOpenRem, undefined, async (message) => {
