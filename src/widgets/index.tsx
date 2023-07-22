@@ -13,6 +13,11 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerWidget('table_of_contents', WidgetLocation.RightSidebar, {
     dimensions: { height: 'auto', width: '100%' },
   });
+
+  plugin.event.addListener(AppEvents.GlobalOpenRem, undefined, async (message) => {
+    const remId = message.remId as RemId;
+    await plugin.storage.setLocal('TOC_lastOpenedRemId', remId);
+  });
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}

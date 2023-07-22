@@ -1,4 +1,4 @@
-import { renderWidget, usePlugin, useTracker, RemId, Rem } from '@remnote/plugin-sdk';
+import { renderWidget, usePlugin, useTracker, RemId } from '@remnote/plugin-sdk';
 import {
   convertContentsToFlatList,
   expandHighestCollapsedAncestor,
@@ -7,16 +7,21 @@ import {
 
 export const TableOfContentsWidget = () => {
   const plugin = usePlugin();
-  // TODO: detect opening another document
+  const lastOpenedRemId = useTracker(async (reactivePlugin) => {
+    return await reactivePlugin.storage.getLocal('TOC_lastOpenedRemId');
+  });
   const contents =
-    useTracker(async (reactivePlugin) => {
-      const paneId = await reactivePlugin.window.getFocusedPaneId();
-      const remId = await reactivePlugin.window.getOpenPaneRemId(paneId);
-      const rem = await reactivePlugin.rem.findOne(remId);
-      if (!rem) return;
-      await rem.allRemInDocumentOrPortal(); // track the changes of all rems
-      return await generateContents(rem, plugin);
-    }, []) || [];
+    useTracker(
+      async (reactivePlugin) => {
+        const paneId = await reactivePlugin.window.getFocusedPaneId();
+        const remId = await reactivePlugin.window.getOpenPaneRemId(paneId);
+        const rem = await reactivePlugin.rem.findOne(remId);
+        if (!rem) return [];
+        await rem.allRemInDocumentOrPortal(); // track the changes of all rems
+        return await generateContents(rem, plugin);
+      },
+      [lastOpenedRemId]
+    ) || [];
 
   // TODO: add a spinner to distinguish between no contents and loading
   if (contents.length === 0) {
