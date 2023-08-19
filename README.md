@@ -1,6 +1,9 @@
 # Table of Contents Plugin
 
-The RemNote plugin that will create a table of contents from a note.
+This RemNote plugin creates a table of contents from your note automatically.
+
+This idea comes from the below plugin request.<br/>
+https://feedback.remnote.com/p/ability-to-create-a-table-of-contents
 
 ## Features
 
@@ -9,7 +12,7 @@ The RemNote plugin that will create a table of contents from a note.
 
 ![working_sample](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/6c1d67da-c6c3-4fff-832d-56f9eb92c31e)
 
-## How to use?
+## How to use it?
 - What will be displayed?
   - headings are automatically displayed in the right sidebar
     - the inner contents are ignored
