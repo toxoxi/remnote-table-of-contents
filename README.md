@@ -34,6 +34,7 @@ See the below image or under texts (for reading)
     - this heading is not displayed because it is not directly underneath the heading content
 
 ## TODO
+- [ ] Support mobiles
 - [ ] Beautiful scroll to display all the content even if jumping downward.
   - ![image](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/2fc98e06-4b05-4288-b7ad-dd605a9d0709)
 
