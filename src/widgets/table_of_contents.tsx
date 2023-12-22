@@ -38,10 +38,9 @@ export const TableOfContentsWidget = () => {
   const jumpToRem = async (remId: RemId) => {
     // expand the highest collapsed ancestor rem in order to jump to the rem
     await expandHighestCollapsedAncestor(remId, plugin);
-    // remove focus if some rems are selected
-    await plugin.editor.selectText({ start: 0, end: 0 });
     // jump to the rem
-    await plugin.editor.selectRem([remId]);
+    let rem = await plugin.rem.findOne(remId);
+    await rem?.openRemInContext();
   };
 
   return (
