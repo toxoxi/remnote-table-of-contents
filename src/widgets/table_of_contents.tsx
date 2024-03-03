@@ -40,7 +40,8 @@ export const TableOfContentsWidget = () => {
     await expandHighestCollapsedAncestor(remId, plugin);
     // jump to the rem
     let rem = await plugin.rem.findOne(remId);
-    await rem?.openRemInContext();
+    let parentRemId = await plugin.window.getOpenPaneRemId(await plugin.window.getFocusedPaneId())
+    await rem?.openRemInContext(parentRemId);
   };
 
   return (
