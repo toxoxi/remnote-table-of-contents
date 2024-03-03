@@ -42,3 +42,10 @@ See the below image or under texts (for reading)
   - ![image](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/2fc98e06-4b05-4288-b7ad-dd605a9d0709)
 
 <!-- ignore-after -->
+
+## Release
+1. develop locally with `yarn dev`
+    - take care of using macOS app rather than web
+2. run `yarn build`
+3. upload the PluginZip.zip to market
+4. wait for approval
