@@ -46,6 +46,7 @@ See the below image or under texts (for reading)
 ## Release
 1. develop locally with `yarn dev`
     - take care of using macOS app rather than web
-2. run `yarn build`
-3. upload the PluginZip.zip to market
-4. wait for approval
+2. update manifest version
+3. run `yarn build`
+4. upload the PluginZip.zip to market
+5. wait for approval
