@@ -7,10 +7,18 @@ import {
 } from '@remnote/plugin-sdk';
 import '../style.css';
 import '../App.css';
+import { isMobileOs } from '../lib/utils';
 
 async function onActivate(plugin: ReactRNPlugin) {
   // Register a sidebar widget.
-  await plugin.app.registerWidget('table_of_contents', WidgetLocation.RightSidebar, {
+  let os = await plugin.app.getOperatingSystem();
+
+  let location = WidgetLocation.RightSidebar;
+  if (isMobileOs(os)) {
+    location = WidgetLocation.LeftSidebar
+  }
+
+  await plugin.app.registerWidget('table_of_contents', location, {
     dimensions: { height: 'auto', width: '100%' },
     widgetTabIcon: `${plugin.rootURL}toc_icon.png`,
     widgetTabTitle: 'Table of Contents',
