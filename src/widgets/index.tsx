@@ -11,12 +11,9 @@ import { isMobileOs } from '../lib/utils';
 
 async function onActivate(plugin: ReactRNPlugin) {
   // Register a sidebar widget.
-  let os = await plugin.app.getOperatingSystem();
+  const os = await plugin.app.getOperatingSystem();
 
-  let location = WidgetLocation.RightSidebar;
-  if (isMobileOs(os)) {
-    location = WidgetLocation.LeftSidebar
-  }
+  const location = isMobileOs(os) ? WidgetLocation.LeftSidebar : WidgetLocation.RightSidebar;
 
   await plugin.app.registerWidget('table_of_contents', location, {
     dimensions: { height: 'auto', width: '100%' },
