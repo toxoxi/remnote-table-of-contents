@@ -39,8 +39,10 @@ export const TableOfContentsWidget = () => {
     // expand the highest collapsed ancestor rem in order to jump to the rem
     await expandHighestCollapsedAncestor(remId, plugin);
     // jump to the rem
-    let rem = await plugin.rem.findOne(remId);
-    let parentRemId = await plugin.window.getOpenPaneRemId(await plugin.window.getFocusedPaneId())
+    const rem = await plugin.rem.findOne(remId);
+    const parentRemId = await plugin.window.getOpenPaneRemId(
+      await plugin.window.getFocusedPaneId()
+    );
     await rem?.openRemInContext(parentRemId);
   };
 
@@ -50,7 +52,7 @@ export const TableOfContentsWidget = () => {
       <hr className="border-gray-300" />
       <ul className="p-0 space-y-3 list-none">
         {flatContents.map((content, i) => (
-            <li key={`${content.id}_${i}`} className={`ml-${(content.depth - 1) * 4}`}>
+          <li key={`${content.id}_${i}`} className={`ml-${(content.depth - 1) * 4}`}>
             <a
               key={`${content.id}_${i}`}
               href="#"
