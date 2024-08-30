@@ -102,3 +102,7 @@ export const expandHighestCollapsedAncestor = async (remId: RemId, plugin: RNPlu
   await expandTarget?.expand(documentRemId, true);
 };
 
+
+export function isMobileOs(os: string): boolean {
+  return os == 'ios' || os == 'android';
+}

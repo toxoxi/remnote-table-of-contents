@@ -50,7 +50,7 @@ export const TableOfContentsWidget = () => {
       <hr className="border-gray-300" />
       <ul className="p-0 space-y-3 list-none">
         {flatContents.map((content, i) => (
-          <li className={`ml-${(content.depth - 1) * 4}`}>
+            <li key={`${content.id}_${i}`} className={`ml-${(content.depth - 1) * 4}`}>
             <a
               key={`${content.id}_${i}`}
               href="#"

@@ -2,7 +2,7 @@
   "author": "plant",
   "name": "Table of Contents",
   "description": "The RemNote plugin that will create a table of contents from a note.",
-  "enableOnMobile": false,
+  "enableOnMobile": true,
   "id": "plant-znddugq",
   "manifestVersion": 1,
   "repoUrl": "https://github.com/toxoxi/remnote-table-of-contents",
