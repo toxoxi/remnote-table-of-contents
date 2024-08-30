@@ -13,6 +13,7 @@ https://feedback.remnote.com/p/ability-to-create-a-table-of-contents
 ![working_sample](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/6c1d67da-c6c3-4fff-832d-56f9eb92c31e)
 
 ## How to use it?
+
 - What will be displayed?
   - headings are automatically displayed in the right sidebar
     - the inner contents are ignored
@@ -22,6 +23,7 @@ https://feedback.remnote.com/p/ability-to-create-a-table-of-contents
   - if the content jumping to is inside the collapsed rem, it will be automatically expanded
 
 ## More details
+
 See the below image or under texts (for reading)
 ![image](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/a7ceb146-f6ea-4925-ae75-b1e9c5dc9f87)
 
@@ -31,21 +33,17 @@ See the below image or under texts (for reading)
 - the maximum depth to be able to display is four
   - depth ⇒ the count of nesting from the top
     - DEPTH: 4 – this heading will be displayed
-      - DEPTH: 5 – THIS HEADING WON'T BE DISPLAYED 
+      - DEPTH: 5 – THIS HEADING WON'T BE DISPLAYED
 - indirect headings are not displayed
   - The table of contents only displays headings directly underneath the parent heading.
     - this heading is not displayed because it is not directly underneath the heading content
 
-## TODO
-- [ ] Support mobiles
-- [ ] Beautiful scroll to display all the content even if jumping downward.
-  - ![image](https://github.com/toxoxi/remnote-table-of-contents/assets/29012724/2fc98e06-4b05-4288-b7ad-dd605a9d0709)
-
 <!-- ignore-after -->
 
 ## Release
+
 1. develop locally with `yarn dev`
-    - take care of using macOS app rather than web
+   - take care of using macOS app rather than web
 2. update manifest version
 3. run `yarn build`
 4. upload the PluginZip.zip to market
