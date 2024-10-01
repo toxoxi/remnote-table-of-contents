@@ -28,11 +28,11 @@ async function buildChildren(
   const children = await Promise.all(
     childrenRem.map(async (child) => {
       const isHeader = await isHeaderRem(child);
+      const headerType = await child.getFontSize();
       if (!isHeader) {
         return {};
       }
-
-      return buildContent(depth, child, plugin);
+      return buildContent(Number(headerType?headerType[1]:1), child, plugin);
     })
   );
 
