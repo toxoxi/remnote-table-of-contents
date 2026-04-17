@@ -10,6 +10,10 @@ export const TableOfContentsWidget = () => {
   const lastOpenedRemId = useTracker(async (reactivePlugin) => {
     return await reactivePlugin.storage.getLocal('TOC_lastOpenedRemId');
   });
+  const showLevels = useTracker(async (reactivePlugin) => {
+    return await reactivePlugin.settings.getSetting<boolean>('show-heading-levels');
+  });
+
   const contents =
     useTracker(
       async (reactivePlugin) => {
@@ -23,7 +27,6 @@ export const TableOfContentsWidget = () => {
       [lastOpenedRemId]
     ) || [];
 
-  // TODO: add a spinner to distinguish between no contents and loading
   if (contents.length === 0) {
     return (
       <nav className="rounded py-1 px-4">
@@ -36,9 +39,7 @@ export const TableOfContentsWidget = () => {
   const flatContents = convertContentsToFlatList(contents);
 
   const jumpToRem = async (remId: RemId) => {
-    // expand the highest collapsed ancestor rem in order to jump to the rem
     await expandHighestCollapsedAncestor(remId, plugin);
-    // jump to the rem
     const rem = await plugin.rem.findOne(remId);
     const parentRemId = await plugin.window.getOpenPaneRemId(
       await plugin.window.getFocusedPaneId()
@@ -52,14 +53,21 @@ export const TableOfContentsWidget = () => {
       <hr className="border-gray-300" />
       <ul className="p-0 space-y-3 list-none">
         {flatContents.map((content, i) => (
-          <li key={`${content.id}_${i}`} className={`ml-${(content.depth - 1) * 4}`}>
+          <li
+            key={`${content.id}_${i}`}
+            style={{ marginLeft: `${(content.depth - 1) * 16}px` }}
+          >
             <a
-              key={`${content.id}_${i}`}
               href="#"
               onClick={async () => await jumpToRem(content.id)}
-              className="flex text-base no-underline text-gray-700 hover:text-gray-900 hover:underline"
+              className="flex items-baseline gap-2 text-base no-underline text-gray-700 hover:text-gray-900 hover:underline"
             >
-              {content.text}
+              {showLevels && (
+                <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 shrink-0 w-6">
+                  H{content.depth}
+                </span>
+              )}
+              <span>{content.text}</span>
             </a>
           </li>
         ))}

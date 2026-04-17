@@ -10,6 +10,14 @@ import '../App.css';
 import { isMobileOs } from '../lib/utils';
 
 async function onActivate(plugin: ReactRNPlugin) {
+  await plugin.settings.registerBooleanSetting({
+    id: 'show-heading-levels',
+    title: 'Show heading levels',
+    description:
+      'Display a small H1/H2/H3 label next to each entry in the table of contents.',
+    defaultValue: false,
+  });
+
   // Register a sidebar widget.
   const os = await plugin.app.getOperatingSystem();
 
