@@ -18,6 +18,13 @@ async function onActivate(plugin: ReactRNPlugin) {
     defaultValue: false,
   });
 
+  await plugin.settings.registerBooleanSetting({
+    id: 'show-indent-guides',
+    title: 'Show indent guides',
+    description: 'Draw vertical lines in the TOC showing each heading’s nesting level.',
+    defaultValue: true,
+  });
+
   // Register a sidebar widget.
   const os = await plugin.app.getOperatingSystem();
 
