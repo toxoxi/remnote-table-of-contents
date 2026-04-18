@@ -1,65 +1,74 @@
 import { BuiltInPowerupCodes, RNPlugin, Rem, RemId } from '@remnote/plugin-sdk';
 
-type Content = {
-  [remId: RemId]: {
-    depth: number;
-    text: string;
-    rawSize: string;
-    children: Content[];
-  };
+export type TocNode = {
+  id: RemId;
+  depth: number;
+  text: string;
+  rawSize: string;
+  children: TocNode[];
 };
 
 // Recursion guard against pathologically deep bullet trees.
 const MAX_REM_DEPTH = 50 as const;
 
-export async function generateContents(root: Rem, plugin: RNPlugin): Promise<Content[]> {
+export async function generateContents(root: Rem, plugin: RNPlugin): Promise<TocNode[]> {
   const childrenRem = await root.getChildrenRem();
-  const contents = await buildChildren(0, childrenRem, plugin);
-  return contents;
+  const flat = await collectHeadings(0, childrenRem, plugin);
+  return buildTreeByHeadingLevel(flat);
 }
 
-async function buildChildren(
+// Walk the bullet tree in document order and collect every real heading as a
+// leaf node (children = []). Non-header rems are not emitted but we still
+// descend into them so headings nested under plain bullets are not lost.
+async function collectHeadings(
   remDepth: number,
-  childrenRem: Rem[],
+  rems: Rem[],
   plugin: RNPlugin
-): Promise<Content[]> {
-  if (remDepth > MAX_REM_DEPTH) {
-    return [];
-  }
+): Promise<TocNode[]> {
+  if (remDepth > MAX_REM_DEPTH) return [];
 
-  const results = await Promise.all(
-    childrenRem.map(async (child): Promise<Content[]> => {
-      const header = await getHeaderInfo(child);
+  const perRem = await Promise.all(
+    rems.map(async (rem): Promise<TocNode[]> => {
+      const out: TocNode[] = [];
+      const header = await getHeaderInfo(rem);
       if (header) {
-        return [await buildContent(child, plugin, remDepth, header)];
+        const text = rem.text ? await plugin.richText.toString(rem.text) : '';
+        out.push({
+          id: rem._id,
+          depth: header.depth,
+          text,
+          rawSize: header.rawSize,
+          children: [],
+        });
       }
-      // Not a header: keep descending so headers nested under plain rems
-      // (bullets, paragraphs, etc.) still appear in the TOC.
-      const grandchildren = await child.getChildrenRem();
-      return buildChildren(remDepth + 1, grandchildren, plugin);
+      const childrenRem = await rem.getChildrenRem();
+      const descendants = await collectHeadings(remDepth + 1, childrenRem, plugin);
+      return [...out, ...descendants];
     })
   );
 
-  return results.flat();
+  return perRem.flat();
 }
 
-async function buildContent(
-  rem: Rem,
-  plugin: RNPlugin,
-  remDepth: number,
-  header: { depth: number; rawSize: string }
-): Promise<Content> {
-  const [id, text, childrenRem] = await extractAttributes(rem, plugin);
-  const children = await buildChildren(remDepth + 1, childrenRem, plugin);
-
-  return {
-    [id]: {
-      depth: header.depth,
-      text,
-      rawSize: header.rawSize,
-      children,
-    },
-  };
+// Re-nest a flat heading list by H-level rather than bullet position — so an
+// H2 becomes a child of the most recent H1, regardless of whether they share
+// a bullet parent. Orphans (e.g. an H3 with no preceding higher-level heading)
+// surface at their own level. Classic stack-based TOC build.
+function buildTreeByHeadingLevel(flat: TocNode[]): TocNode[] {
+  const roots: TocNode[] = [];
+  const stack: TocNode[] = [];
+  for (const node of flat) {
+    while (stack.length > 0 && stack[stack.length - 1].depth >= node.depth) {
+      stack.pop();
+    }
+    if (stack.length === 0) {
+      roots.push(node);
+    } else {
+      stack[stack.length - 1].children.push(node);
+    }
+    stack.push(node);
+  }
+  return roots;
 }
 
 // Returns heading info only if the rem is a *real* heading — the Header powerup
@@ -78,39 +87,6 @@ async function getHeaderInfo(rem: Rem): Promise<{ depth: number; rawSize: string
   } catch {
     return null;
   }
-}
-
-async function extractAttributes(
-  rem: Rem,
-  plugin: RNPlugin
-): Promise<[id: string, text: string, children: Rem[]]> {
-  const id = rem._id;
-  const text = rem.text ? await plugin.richText.toString(rem.text) : '';
-  const childrenRem = await rem.getChildrenRem();
-
-  return [id, text, childrenRem];
-}
-
-export type FlatContent = {
-  id: RemId;
-  depth: number;
-  text: string;
-  rawSize: string;
-};
-// convert nested Content to flat list
-export function convertContentsToFlatList(contents: Content[]): FlatContent[] {
-  return contents.flatMap((content) => {
-    const [id, depth, text, rawSize, children] = extractContent(content);
-    return [{ id, depth, text, rawSize }, ...convertContentsToFlatList(children)];
-  });
-}
-
-function extractContent(
-  content: Content
-): [id: RemId, depth: number, text: string, rawSize: string, children: Content[]] {
-  const id = Object.keys(content)[0];
-  const { depth, text, rawSize, children } = content[id];
-  return [id, depth, text, rawSize, children];
 }
 
 export const expandHighestCollapsedAncestor = async (remId: RemId, plugin: RNPlugin) => {
